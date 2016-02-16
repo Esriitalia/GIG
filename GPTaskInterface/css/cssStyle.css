@@ -1,0 +1,199 @@
+/* Body class and dojo border-container */
+html,body, #border-container{
+	height: 100%;
+   margin: 0;
+}
+#border-container{
+   overflow: hidden;
+}
+/* All input fields, textarea and select */
+input, textarea, select{
+	border-radius: 10px;
+	padding: 6px 12px 6px 12px;
+	border: solid #c0c0c0 1px;
+	text-decoration: none;
+}
+/* Manages the on hover action */
+input:hover, textarea:hover, select:hover{
+	background: #eeeeee;
+}
+/* Manages the HTML buttons */
+input[type=button]{
+	background: #00b2ff;
+	/* Defines the background transition gradient image for all browsers */
+	background-image: -webkit-linear-gradient(top, #00b2ff, #1f7ba3); /* For Google Chrome and Safari*/
+	background-image: -moz-linear-gradient(top, #00b2ff, #1f7ba3); /* For Firefox Mozilla */
+	background-image: -ms-linear-gradient(top, #00b2ff, #1f7ba3); /* For  For Opera */
+	background-image: -o-linear-gradient(top, #00b2ff, #1f7ba3); /* For Internet Explorer */
+	background-image: linear-gradient(to bottom, #00b2ff, #1f7ba3);
+	-webkit-border-radius: 28;
+	-moz-border-radius: 28;
+	border-radius: 28px;
+	color: #ffffff;
+	padding: 6px 12px 6px 12px;
+	border: solid #c0c0c0 0px;
+	text-decoration: none;
+}
+/* Manages the buttons on hover*/
+input[type=button]:hover{
+	background: #3cb0fd;
+	background-image: -webkit-linear-gradient(top, #3cb0fd, #6ab8e6);
+	background-image: -moz-linear-gradient(top, #3cb0fd, #6ab8e6);
+	background-image: -ms-linear-gradient(top, #3cb0fd, #6ab8e6);
+	background-image: -o-linear-gradient(top, #3cb0fd, #6ab8e6);
+	background-image: linear-gradient(to bottom, #3cb0fd, #6ab8e6);
+	text-decoration: none;
+}
+/* Manages the buttons when are disabled */
+input[type=button]:disabled{
+	background: #828282;
+	background-image: -webkit-linear-gradient(top, #828282, #9f9a9a);
+	background-image: -moz-linear-gradient(top, #828282, #9f9a9a);
+	background-image: -ms-linear-gradient(top, #828282, #9f9a9a);
+	background-image: -o-linear-gradient(top, #828282, #9f9a9a);
+	background-image: linear-gradient(to bottom, #828282, #9f9a9a);
+	text-decoration: none;
+	color: #545454;
+}
+/* Manages the fieldsets used for display the input and output parameters */
+fieldset{
+	max-width: 100%;
+	background-color: rgba(248,248,248,0.3);
+	border-radius: 10px;
+}
+/* Manages the fieldset, input, textarea and select fields when are disabled */
+fieldset:disabled,input:disabled,textarea:disabled,select:disabled{
+	background-color: rgba(130,130,130,0.9);
+	color: #545454;
+}
+/* Manages the HTML table */
+table{
+	width: 100%;
+	border: 0px solid black;
+}
+/* Manages the header cells of table */
+th{
+	background: #00b2ff;
+}
+/* Manages the even rows of the table */
+tr:nth-child(even){
+	background-color: #f2f2f2
+}
+/* Manages the table's rows when are on hover */
+tr:hover{
+	background: #00b2ff;
+}
+#title{
+   height:50px;
+   width: 100%;
+   min-width: 800px;
+   text-align: center;
+   font-size: 30px;
+   border-bottom-style: groove;
+   background-color: #eeeeee;
+   -webkit-border-bottom-left-radius: 28;
+   -webkit-border-bottom-right-radius: 28;
+   -moz-border-bottom-left-radius: 28;
+   -moz-border-bottom-right-radius: 28;
+   border-bottom-left-radius: 28px;
+   border-bottom-right-radius: 28px;
+   color: #1f7ba3;
+   position: fixed;
+   z-index: 1;
+}
+#info{
+   float:right;
+   margin: 5px 10px 0 10px;
+   height:38px;
+   width:38px;
+}
+/* Define the serviceDiv's characteristics */
+#taskDiv{
+   margin-top: 50px;
+	float:left;
+	height:100%;
+	width:43%;
+	padding:0.5%;
+}
+/* Define the mapDiv's characteristics */
+#mapDiv{
+   margin: 50px 5px 0 0;
+	float:right;
+	height:100%;
+	width:54%;
+	padding:0.5%;
+}
+/* Define the divServiceParameter's characteristics */
+#divTaskParameter{
+	height: 88%;
+	overflow:auto;
+}
+/* Define the divInsertUrl's characteristics */
+#divInsertUrl{
+	height: 10%;
+	min-height: 50px;
+}
+/* Define the text-result's characteristics */
+#text-result{
+	float:left;
+	padding: 1%;
+	margin: 1%;
+	border-radius: 15px;
+	border: solid #c0c0c0 2px;
+	background-color: rgba(192,192,192,0.6);
+	width: 96%;
+	display: none;
+}
+/* Define the characteristics of the Switch Map Esri widget*/
+#switchDiv{
+   position: absolute;
+	right: 2%;
+	top: 2%;
+	z-Index:999;
+}
+/* Define the characteristics of the Switch Gallery */
+#switchGalleryDiv{
+	width:380px;
+	height:280px;
+	overflow:auto;
+}
+/* Define font-size and color of div error */
+#servError,
+#loadError{
+	color: red;
+	font-size: 20px;
+}
+/* Define the layout of the Environment Options' Div*/
+#outOptions{
+	min-width: 450px;
+	border: none;
+	background: none;
+}
+.lang{
+   float: right;
+   margin: 10px 10px 0 0;
+   height:30px;
+   width:30px;
+}
+.spanChoice{
+	white-space:nowrap;
+	float: left
+}
+.spanPoint{
+	white-space:nowrap;
+	float: left
+}
+/* Define the position of the draw and redraw buttons*/
+.drawButtons,.redrawButtons{
+	float: right;
+	margin: 5px;
+}
+/* Define select's size */
+.selectChoice{
+	width: 100%;
+	max-width: 100%;
+}
+/* Define the size of the url input field */
+.urlResourse{
+	width: 90%;
+}

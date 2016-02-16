@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+	<link rel="stylesheet" href="//js.arcgis.com/3.14/dijit/themes/claro/claro.css" />
+	<link rel="stylesheet" href="http://js.arcgis.com/3.14/esri/css/esri.css"/>
+	<link rel="stylesheet" href="css/cssStyle.css" type="text/css"/>
+	<title>GPTask Interface Generator</title>
+   <script>
+      // recovers the choice language from the localStorage
+      var currentLang = localStorage.getItem('lang');
+      if(currentLang == null){
+         currentLang = 'en';
+         localStorage.setItem('lang','en');
+      }
+      // recovers the configurations from config.json
+      try{
+         var reqConfig = new XMLHttpRequest();
+         reqConfig.overrideMimeType("application/json");
+         reqConfig.open('GET','config.json',false);
+         reqConfig.send(null);
+         var config = JSON.parse(reqConfig.responseText);
+      }catch(e){
+         console.log("The config.json is corrupted!");
+         alert("The config.json is corrupted!");
+         document.write('<h1>The GIG application cannot start!</h1>'+
+            '<h2>The config.json file is corrupted</h2>');
+         
+         window.stop();
+      };
+      // exctracts the language labels from the config variable
+      var currentLabels = null;
+      config.labels.forEach(function(item){
+         if(item.lang == currentLang)
+            currentLabels = item;
+      });
+      delete config.labels;
+      
+      // if the log level is wrong, sets the default level
+      var logLevel = config.logLevel.toUpperCase();
+      if(logLevel != 'ALL' && logLevel != 'TRACE' && logLevel != 'DEBUG' && logLevel != 'INFO' 
+         && logLevel != 'WARN' && logLevel != 'ERROR' && logLevel != 'FATAL' && logLevel != 'OFF')
+         logLevel = 'ALL';
+      
+      var dojoConfig = {
+			paths:{
+				modules: location.pathname.replace(/\/[^/]+$/, '') + '/modules',
+				log: location.pathname.replace(/\/[^/]+$/, '') + '/log',
+			},
+			isDebug: true,
+			has: {
+            "dojo-debug-messages": false,
+            "logLevel-modules": logLevel,
+         },
+			locale: currentLang
+		};
+	</script>
+	<script src="http://js.arcgis.com/3.14/"></script>
+	<script>
+		// requests for dojo, esri and custom modules
+		require(["esri/config","esri/map","esri/dijit/BasemapGallery","esri/geometry/Point",
+			"dojo/_base/window","dojo/dom","dojo/on","dojo/dom-construct","dojo/dom-attr","dojo/parser",
+			"dojo/dom-style","dojox/widget/Standby","dojo/window","dojo/query",
+			"modules/taskInfo","modules/createInterface","modules/taskRequest","modules/taskResults",
+			"modules/asyncGetResults",
+			"dijit/ConfirmDialog","dijit/Dialog","log/main","dijit/layout/BorderContainer", "dijit/layout/ContentPane",
+			"dijit/TitlePane","dojo/domReady!"],
+		function(esriConfig, Map, BasemapGallery, Point,
+			base_win, dom, on, domCost, domAttr, parser, domStyle, Standby, win, query,
+			TaskInfo, CreateInterface, TaskRequest, TaskResults, AsyncGetResults, ConfirmDialog, Dialog, logFactory){
+			// loadButton: DOM Button object
+			//    Manages the 'load' task button
+			var loadButton;
+			// submitButton: DOM Button object
+			//    Manages the 'submit' button
+			var submitButton;
+			// taskReq: TaskRequest object
+			var taskReq;
+			// taskInfo: TaskInfo object
+			var taskInfo;
+			// createInter: CreateInterface object
+			var createInter;
+			// Dojox Standby widget
+			var standby = new Standby({
+				image: 'img/gear.gif'
+			});
+			// Shows standby view while loading the map
+         standby.target = 'border-container';
+         base_win.body().appendChild(standby.domNode);
+         standby.startup();
+         standby.show();
+         
+         var logger = logFactory.getLogger("index.html");
+         // sets the logger's level
+         switch(logLevel){
+            case 'OFF':
+               logger.setLevel(logFactory.Level.OFF);
+            break;
+            case 'FATAL':
+               logger.setLevel(logFactory.Level.FATAL);
+            break;
+            case 'ERROR':
+               logger.setLevel(logFactory.Level.ERROR);
+            break;
+            case 'WARN':
+               logger.setLevel(logFactory.Level.WARN);
+            break;
+            case 'INFO':
+               logger.setLevel(logFactory.Level.INFO);
+            break;
+            case 'DEBUG':
+               logger.setLevel(logFactory.Level.DEBUG);
+            break;
+            case 'TRACE':
+               logger.setLevel(logFactory.Level.TRACE);
+            break;
+            default:
+               logger.setLevel(logFactory.Level.ALL);
+            break;
+         }
+         if(logger.isDebugEnabled())
+            console.log('config', config);
+            
+         // opacifies the image of selected language
+         if(currentLang == 'en')
+            domStyle.set('lang-en','opacity',0.5);
+         else
+            domStyle.set('lang-it','opacity',0.5);
+         
+			// settings the listeners for the language buttons
+			var langConfirm = new ConfirmDialog({
+			   title: "Confirm",
+			   content: currentLabels.lang_message
+			});
+			query(".lang").on("click", function(evt){
+			   var actLang = localStorage.getItem('lang');
+			   var lang = this.id.substr(5);
+			   if(actLang != lang){
+			      langConfirm.set('onExecute',function(){
+			         localStorage.setItem('lang',lang);
+                  location.reload();
+			      });
+			      langConfirm.show();
+			   }
+			});
+			
+			// settings the listener for the info button
+			var infoDialog = new Dialog({
+			   title: "Info",
+			   content: "GIG Application <br><br> ProxyUrl: "+config.httpProxy.url+
+			      "<br> AlwaysUseProxy: "+config.httpProxy.alwaysUseProxy+
+			      "<br><br> Log Level: "+logLevel+
+			      "<br>App Version: 1.0<br> Developer: Roberto Palmieri<br><br>"+
+			      "<a href='help/default.html' target='_blank'> <b>Help page</b></a>",
+            style: "width: 300px;"
+			});
+			on(dom.byId('info'), 'click', function(){
+			   infoDialog.show();
+			});
+			// settings the datalist of url input text
+         var dataList = dom.byId('tasks');
+         config.exampleTasks.forEach(function(item){
+            var option = domCost.create('option');
+            option.value = item;
+            dataList.appendChild(option);
+         });
+         // settings the basemap widget label on current language
+         domAttr.set('switchContent','data-dojo-props',
+            "title:'"+currentLabels.switch_basemap+"', closable:false, open:false");
+         domAttr.set('loadTask','value',currentLabels.load_task);
+         domAttr.set('info','title',currentLabels.info_button);
+			
+			// configures for Esri Java proxy
+			esriConfig.defaults.io.proxyUrl = config.httpProxy.url;
+			esriConfig.defaults.io.alwaysUseProxy = config.httpProxy.alwaysUseProxy;
+			parser.parse();
+			
+			var map = new Map('mapDiv', {
+				basemap: 'topo',
+				center: [12.41, 41.9],
+				zoom: 6,
+			});
+			var basemapGallery = new BasemapGallery({
+				showArcGISBasemaps: true,
+				map: map,
+			}, 'basemapGallery');
+			basemapGallery.startup();
+			
+			// when the map is loaded, hides the standby widget
+			map.on('load', function(){
+				standby.hide();
+			});
+
+			loadButton = on.pausable(dom.byId('loadTask'), 'click', loadTask);
+
+			function loadTask(){
+			   // description:
+			   //    The function that sets the url attribute and calls the requestInfo method of
+			   //    the TaskInfo module.
+			   //    If the request is successful calls the infoSuccess function, else calls infoError function.
+			   
+				// disables 'load' button until the interface isn't loaded
+				standby.target = 'divTaskParameter';
+				base_win.body().appendChild(standby.domNode);
+				standby.startup();
+				standby.show();
+				// retrieves the function that removes all the graphics layers
+				removeGraphicsLayers();
+				loadButton.pause();
+				// focuses the map on Italy
+				map.centerAndZoom(new Point(12.41, 41.9), 6);
+				map.graphics.clear();
+				domCost.empty('text-result');
+				domStyle.set('text-result','display','none');
+				
+				taskInfo = new TaskInfo({
+					taskUrl: dom.byId('url').value,
+					labels: currentLabels,
+				});
+				var ser = taskInfo.requestInfo();
+				ser.then(infoSuccess,infoError);
+			}	
+			function infoSuccess(result){
+			   // description:
+			   //    The function that sets the received informations by the server about the task
+			   //    as attributes of CreateInterface object and later calls its loadInterface method.
+				createInter = new CreateInterface({
+					taskUrl: taskInfo.taskUrl,
+			  		taskName: taskInfo.taskName,
+			  		taskExeType: taskInfo.taskExeType,
+					taskDescription: taskInfo.taskDescription,
+					inputParams: taskInfo.inputParams,
+					labels: currentLabels,
+				});
+				var numParam = createInter.loadInterface(map,'divTaskParameter');
+				// Sets button on pause until the task interface is ready
+				standby.hide();
+				loadButton.resume();
+				submitButton = on.pausable(dom.byId('submit'), 'click', submitTask);
+			}
+			function submitTask(){
+            // description:
+            //    The function that calls the gpTaskRequest method of TaskRequest object.
+            //    This method recovers the user input and sends the request to the server.
+            //    If the request is successful calls the taskSuccess function, else calls taskError function.
+				standby.target = 'taskDiv';
+				base_win.body().appendChild(standby.domNode);
+				standby.startup();
+				standby.show();
+				domCost.empty('text-result');
+				domStyle.set('text-result','display','none');
+				// disables 'submit' button until the response's arrival
+				submitButton.pause();
+				taskReq = new TaskRequest({
+					taskUrl: taskInfo.taskUrl,
+					taskExeType: taskInfo.taskExeType,
+					parameters: taskInfo.inputParams,
+					labels: currentLabels,
+				});
+				var req = taskReq.gpTaskRequest(map);
+				req.then(taskSuccess,taskError);
+			}
+			function taskSuccess(response){
+			   // description:
+			   //    If the task execution type is synchronous, calls the showResults method,
+			   //    instead, if the execution type is asynchronous, previously calls the
+			   //    getResults method for recovering the results from the server and later calls the
+			   //    showResults method.
+			   
+				// if the task execution type is asynchronous, before must retrieve the results from the server
+				if(response.type == 'async'){
+					var asyncGetRes = new AsyncGetResults({
+						taskUrl: taskInfo.taskUrl,
+						jobId: response.jobId,
+						outputParams: taskInfo.outputParams,
+					});
+					var res = asyncGetRes.getResults();
+					res.then(function(result){
+					   if(logger.isInfoEnabled())
+                     console.log('Async Results:', result);
+						var taskRes = new TaskResults({
+							results: result,
+							messages: null,
+							taskUrl: taskInfo.taskUrl,
+							jobId: response.jobId,
+							labels: currentLabels,
+						});
+						taskRes.showResults('text-result',map);
+						submitButton.resume();
+					});
+				}
+				// else if the task execution type is synchronous
+				else if(response.type == 'sync'){
+				   if(logger.isInfoEnabled())
+				     console.log('Sync Results:', response.results);
+					var taskRes = new TaskResults({
+						results: response.results,
+						messages: response.messages,
+						taskUrl: null,
+						jobId: null,
+						labels: currentLabels,
+					});
+					taskRes.showResults('text-result',map);
+					submitButton.resume();
+				}
+				standby.hide();
+			}
+			function taskError(error){
+			   // description:
+			   //    The called function if there was an error on task execution
+				submitButton.resume();
+				standby.hide();
+				domCost.destroy('servError');
+				var htmlCode = domCost.toDom('<div id="servError"><br>'+error+'</div>');
+				domCost.place(htmlCode,'divTaskParameter','last');
+				win.scrollIntoView('servError');
+			}			
+			function infoError(error){
+            // description:
+            //    The celled function if there was an error on requestInfo method
+				loadButton.resume();
+				standby.hide();
+				domCost.place(domCost.toDom(''),'divTaskParameter','last');
+				domCost.empty('divTaskParameter');
+				var htmlCode = domCost.toDom('<div id="loadError"><br>Failed to get information from GPTask:'+
+				  '<br>'+error+'</div>');
+				domCost.place(htmlCode,'divTaskParameter','last');
+			}
+			
+			function removeGraphicsLayers(){
+			   // description:
+			   //    The function that removes all the graphics layers and the 'result' layers by the map
+				var graphicsLayers = map.graphicsLayerIds;
+				for(var i=0; i < graphicsLayers.length; i++)
+					map.removeLayer(map.getLayer(graphicsLayers[i]));
+				var layers = map.layerIds;
+				for(var i=0; i < layers.length; i++){
+               if(layers[i].substr(0,6) == 'result')
+                  map.removeLayer(map.getLayer(layers[i]));
+				}
+				logger.debug('Layers and GraphicsLayers removed to the map');
+			};
+		});
+	</script>
+</head>
+<body class="claro">
+   <div id="title">
+      <b style="vertical-align: middle;">GIG - GeoprocessingTask Interface Generator</b>
+      <img id="info" src="img/info.png">
+      <img id="lang-it" class="lang" src="img/it.png" title="Seleziona lingua italiana">
+      <img id="lang-en" class="lang" src="img/en.png" title="Select English Language">
+   </div>
+	<div id="border-container" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design:'headline',gutters:false">
+		<div id="taskDiv" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'left'">
+			<div id="divInsertUrl" align="center">
+			<b>Geoprocessing Task URL: </b><br>
+			<input type="text" id="url" style="width:80%" list="tasks">
+			<datalist id=tasks></datalist>
+			<input type="button" id="loadTask" value="Load">
+			</div>
+			<div id="divTaskParameter">	
+			</div>
+		</div>
+		<div id="mapDiv" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
+			<div id="switchDiv">
+				<div id="switchContent" data-dojo-type="dijit/TitlePane" >
+					<div id="switchGalleryDiv" data-dojo-type="dijit/layout/ContentPane">
+						<div id="basemapGallery">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="text-result" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'bottom'">
+   </div>
+</body>
+</html>

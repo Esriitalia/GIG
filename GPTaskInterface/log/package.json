@@ -1,0 +1,60 @@
+{
+  "name": "be.js-ppwcode-util-log-I",
+  "version": "2.0",
+  "description": "This package contains a logging component that is wrapping the log4javascript logging framework",
+  "keywords": [
+    "PeopleWare",
+    "ppwcode",
+    "util",
+    "logging"
+  ],
+  "maintainers": [
+    {
+      "name": "Jan Dockx",
+      "email": "Jan_Dockx@peopleware.be"
+    }
+  ],
+  "contributors": [
+    {
+      "name": "Jan Dockx",
+      "email": "Jan_Dockx@peopleware.be"
+    },
+    {
+      "name": "Tom Crommen",
+      "email": "Tom_Crommen@peopleware.be"
+    },
+    {
+      "name": "Mark Cuypers",
+      "email": "Mark_Cuypers@peopleware.be"
+    },
+    {
+      "name": "Ramil Rakhmetov",
+      "email": "ramil_rakhmetov@peopleware.be"
+    },
+    {
+      "name": "Dimitri Mestdagh",
+      "email": "dimitri.mestdagh@optis.be"
+    }
+  ],
+  "bugs": {
+    "mail": "Jan_Dockx@peopleware.be"
+  },
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/peopleware/js-ppwcode-util-log-private.git"
+    }
+  ],
+  "dependencies": [
+  ],
+  "os": ["linux", "macos", "win"],
+  "cpu": ["x86", "ppc", "x86_64"],
+  "engines": ["v8", "ejs", "node", "rhino"],
+  "dojoBuild": "js_ppwcode_util_log.profile.js"
+}

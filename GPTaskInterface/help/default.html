@@ -1,0 +1,42 @@
+<html>
+<head>
+   <title>GIG - HELP</title>
+   <script src="theme/scripts.js"></script>
+   <link href="theme/style.css" rel="stylesheet" type="text/css" />
+   <style type="text/css">
+      body {
+         overflow:hidden;
+      }
+   </style>
+</head>
+
+<body onLoad="startPage()">
+
+    <div id="title">
+        GIG - Help
+    </div>
+
+    <div id="index">
+        <strong>INDEX</strong><br><br>
+        <a href="#" onClick="goto('home.html')" style="color:#143381; font-weight:bold" >Retrieve a task</a><br>
+        <a href="#" onClick="goto('task_alfa.html')" class="level1">Task with alphanumeric parameter</a><br>
+        <a href="#" onClick="goto('task_graphic.html')" class="level1">Task with graphic parameter</a><br>
+        <hr />
+        <a href="#" style="color:#143381; font-weight:bold">Configuration & Log</a><br>
+        <a href="#" onClick="goto('config.html')" class="level1">Configuration parameters</a><br>
+        <a href="#" onClick="goto('log.html')" class="level1">Log messages</a><br>
+        <hr />
+        <a href="#" onClick="goto('err_msg.html')" style="color:#143381; font-weight:bold" >Error messages</a><br>
+        <hr />
+        <a href="#" onClick="goto('supp_browsers.html')" style="color:#143381; font-weight:bold" >Supported browsers</a><br>
+        <hr />
+
+    </div>
+
+    <div id="contents">
+        <iframe id="ifcontents" frameborder="0" scrolling="yes"></iframe>
+    </div>
+
+</body>
+
+</html>
