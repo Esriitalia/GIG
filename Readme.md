@@ -1,4 +1,4 @@
-**GIG** - Generic Interface for Geoprocessing Task
+**GIG** - Geoprocessing Task Interface Generator
 --------------------------------------------------
 
 Copyright ©2015 Esri Italia e  **Roberto Palmieri**.  
